@@ -1,5 +1,6 @@
 use tui::Terminal;
-use tui::widgets::{BarChart, Block, Borders, Item, List, SelectableList, Table, Widget, Gauge, Paragraph};
+use tui::widgets::{BarChart, Block, Borders, Gauge, Item, List, Paragraph, SelectableList, Table,
+                   Widget};
 use tui::layout::{Direction, Group, Rect, Size};
 use tui::style::{Color, Modifier, Style};
 use tui::backend::MouseBackend;
@@ -156,46 +157,92 @@ impl TerminalInterface {
 
                                                 // Stat Chart
                                                 {
-                                                    let mut point_sum = (player.attack + player.defense + player.regen) as f32;
+                                                    let mut point_sum = (player.attack
+                                                        + player.defense
+                                                        + player.regen)
+                                                        as f32;
 
                                                     if point_sum == 0f32 {
                                                         point_sum = 1f32;
                                                     }
 
-                                                    let attack_norm = (player.attack as f32 / point_sum) * 100f32;
-                                                    let defense_norm = (player.defense as f32 / point_sum) * 100f32;
-                                                    let regen_norm = (player.regen as f32 / point_sum) * 100f32;
+                                                    let attack_norm =
+                                                        (player.attack as f32 / point_sum) * 100f32;
+                                                    let defense_norm = (player.defense as f32
+                                                        / point_sum)
+                                                        * 100f32;
+                                                    let regen_norm =
+                                                        (player.regen as f32 / point_sum) * 100f32;
 
-                                                    Group::default().direction(Direction::Vertical)
-                                                        .sizes(&[Size::Percent(25), Size::Percent(25), Size::Percent(25), Size::Percent(25)])
-                                                        .render(term, &chunks[1], |term, chunks| {
+                                                    Group::default()
+                                                        .direction(Direction::Vertical)
+                                                        .sizes(&[
+                                                            Size::Percent(25),
+                                                            Size::Percent(25),
+                                                            Size::Percent(25),
+                                                            Size::Percent(25),
+                                                        ])
+                                                        .render(
+                                                            term,
+                                                            &chunks[1],
+                                                            |term, chunks| {
+                                                                // Attack
+                                                                Gauge::default()
+                                                                    .label(&format!(
+                                                                        "Attack: {}/{}",
+                                                                        player.attack, point_sum
+                                                                    ))
+                                                                    .style(
+                                                                        Style::default()
+                                                                            .fg(Color::Red)
+                                                                            .bg(BACKGROUND_COLOR),
+                                                                    )
+                                                                    .percent(attack_norm as u16)
+                                                                    .render(term, &chunks[0]);
 
-                                                            // Attack
-                                                            Gauge::default()
-                                                                .label(&format!("Attack: {}/{}", player.attack, point_sum))
-                                                                .style(Style::default().fg(Color::Red).bg(BACKGROUND_COLOR))
-                                                                .percent(attack_norm as u16)
-                                                                .render(term, &chunks[0]);
+                                                                // Defense
+                                                                Gauge::default()
+                                                                    .label(&format!(
+                                                                        "Defense: {}/{}",
+                                                                        player.defense, point_sum
+                                                                    ))
+                                                                    .style(
+                                                                        Style::default()
+                                                                            .fg(Color::Cyan)
+                                                                            .bg(BACKGROUND_COLOR),
+                                                                    )
+                                                                    .percent(defense_norm as u16)
+                                                                    .render(term, &chunks[1]);
 
-                                                            // Defense
-                                                            Gauge::default()
-                                                                .label(&format!("Defense: {}/{}", player.defense, point_sum))
-                                                                .style(Style::default().fg(Color::Cyan).bg(BACKGROUND_COLOR))
-                                                                .percent(defense_norm as u16)
-                                                                .render(term, &chunks[1]);
+                                                                // Regen
+                                                                Gauge::default()
+                                                                    .label(&format!(
+                                                                        "Regeneration: {}/{}",
+                                                                        player.regen, point_sum
+                                                                    ))
+                                                                    .style(
+                                                                        Style::default()
+                                                                            .fg(Color::LightGreen)
+                                                                            .bg(BACKGROUND_COLOR),
+                                                                    )
+                                                                    .percent(regen_norm as u16)
+                                                                    .render(term, &chunks[2]);
 
-                                                            // Regen
-                                                            Gauge::default()
-                                                                .label(&format!("Regeneration: {}/{}", player.regen, point_sum))
-                                                                .style(Style::default().fg(Color::LightGreen).bg(BACKGROUND_COLOR))
-                                                                .percent(regen_norm as u16)
-                                                                .render(term, &chunks[2]);
-
-                                                            Paragraph::default()
-                                                                .text(&format!("Total Points: {}", point_sum as u32))
-                                                                .style(Style::default().bg(BACKGROUND_COLOR).fg(STANDARD_TEXT_COLOR))
-                                                                .render(term, &chunks[3]);
-                                                        });
+                                                                Paragraph::default()
+                                                                    .text(&format!(
+                                                                        "Total Points: {}",
+                                                                        point_sum as u32
+                                                                    ))
+                                                                    .style(
+                                                                        Style::default()
+                                                                            .bg(BACKGROUND_COLOR)
+                                                                            .fg(
+                                                                                STANDARD_TEXT_COLOR,
+                                                                            ),
+                                                                    )
+                                                                    .render(term, &chunks[3]);
+                                                            },
+                                                        );
                                                 }
                                             });
                                     }
@@ -203,8 +250,21 @@ impl TerminalInterface {
                                     // Description Hemisphere
                                     {
                                         Paragraph::default()
-                                            .style(Style::default().bg(BACKGROUND_COLOR).fg(STANDARD_TEXT_COLOR).modifier(Modifier::Italic))
-                                            .block(Block::default().borders(Borders::TOP).border_style(Style::default().bg(BACKGROUND_COLOR).fg(BORDER_COLOR)))
+                                            .style(
+                                                Style::default()
+                                                    .bg(BACKGROUND_COLOR)
+                                                    .fg(STANDARD_TEXT_COLOR)
+                                                    .modifier(Modifier::Italic),
+                                            )
+                                            .block(
+                                                Block::default()
+                                                    .borders(Borders::TOP)
+                                                    .border_style(
+                                                        Style::default()
+                                                            .bg(BACKGROUND_COLOR)
+                                                            .fg(BORDER_COLOR),
+                                                    ),
+                                            )
                                             .text(&player.description)
                                             .render(term, &chunks[1]);
                                     }
@@ -229,7 +289,8 @@ impl TerminalInterface {
                                         .title_style(
                                             Style::default()
                                                 .bg(BACKGROUND_COLOR)
-                                                .fg(STANDARD_TEXT_COLOR),
+                                                .fg(STANDARD_TEXT_COLOR)
+                                                .modifier(Modifier::Underline),
                                         )
                                         .style(Style::default().bg(BACKGROUND_COLOR))
                                         .borders(Borders::LEFT | Borders::RIGHT),
