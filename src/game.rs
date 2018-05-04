@@ -32,16 +32,16 @@ pub struct Message {
 
 #[derive(Clone)]
 pub struct Room {
-    pub name : String,
-    pub description : String,
-    pub number : u16,
+    pub name: String,
+    pub description: String,
+    pub number: u16,
 }
 
 #[derive(Clone)]
 pub struct Game {
-    pub stat_limit : u16,
-    pub init_points : u16,
-    pub description : String,
+    pub stat_limit: u16,
+    pub init_points: u16,
+    pub description: String,
 }
 
 pub struct GameInformation {
@@ -50,5 +50,5 @@ pub struct GameInformation {
     pub current_enemies: Vec<Entity>,
     pub current_room: Room,
     pub adjacent_rooms: Vec<Room>,
-    pub game : Game,
+    pub game: Game,
 }

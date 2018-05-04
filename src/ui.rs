@@ -4,6 +4,9 @@ use tui::widgets::{BarChart, Block, Borders, Gauge, Item, List, Paragraph, Selec
 use tui::layout::{Direction, Group, Rect, Size};
 use tui::style::{Color, Modifier, Style};
 use tui::backend::MouseBackend;
+
+use chrono::prelude::*;
+
 use game::GameInformation;
 
 use std::sync::*;
@@ -55,6 +58,16 @@ impl TerminalInterface {
         let messages = game_info.messages.clone();
         let player = game_info.player.clone();
 
+        let current_datetime: DateTime<Local> = Local::now();
+        let (ampm_status, hour) = current_datetime.hour12();
+
+        let ampm = if ampm_status {
+            "AM"
+        }
+        else {
+            "PM"
+        };
+
         let message_style = Style::default()
             .bg(BACKGROUND_COLOR)
             .fg(STANDARD_TEXT_COLOR);
@@ -73,11 +86,39 @@ impl TerminalInterface {
                     .direction(Direction::Horizontal)
                     .sizes(&[Size::Percent(100)])
                     .render(term, &chunks[0], |term, chunks| {
-                        Block::default()
-                            .borders(Borders::ALL)
-                            .border_style(Style::default().fg(BORDER_COLOR).bg(BACKGROUND_COLOR))
-                            .style(Style::default().bg(BACKGROUND_COLOR))
-                            .render(term, &chunks[0]);
+                        Group::default()
+                            .direction(Direction::Horizontal)
+                            .sizes(&[Size::Percent(80), Size::Percent(20)])
+                            .render(term, &chunks[0], |term, chunks| {
+                                // Left
+                                Block::default()
+                                    .style(Style::default().bg(BACKGROUND_COLOR))
+                                    .render(term, &chunks[0]);
+
+                                // Date Time Display
+                                Paragraph::default()
+                                    .style(
+                                        Style::default()
+                                            .bg(BACKGROUND_COLOR)
+                                            .fg(STANDARD_TEXT_COLOR),
+                                    )
+                                    .block(Block::default().borders(Borders::TOP | Borders::BOTTOM)
+                                        .style(Style::default().bg(BACKGROUND_COLOR))
+                                        .border_style(Style::default().bg(BACKGROUND_COLOR).fg(BORDER_COLOR)))
+                                    .text(&format!(
+                                        "{:0width$}/{:0width$}/{} - {:?}, {:0width$}:{:0width$}:{:0width$} {}",
+                                        current_datetime.day(),
+                                        current_datetime.month(),
+                                        current_datetime.year(),
+                                        current_datetime.weekday(),
+                                        hour,
+                                        current_datetime.minute(),
+                                        current_datetime.second(),
+                                        ampm,
+                                        width = 2,
+                                    ))
+                                    .render(term, &chunks[1]);
+                            });
                     });
 
                 // TOP INFO SECTION

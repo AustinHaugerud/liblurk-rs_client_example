@@ -1,3 +1,4 @@
+extern crate chrono;
 extern crate liblurk;
 extern crate termion;
 extern crate tui;
@@ -61,7 +62,7 @@ fn main() {
             name: String::from("Hallway"),
             description: String::from("Very hallwayish."),
             number: 5,
-        }
+        },
     ];
 
     let mock_enemies = vec![
@@ -114,15 +115,15 @@ fn main() {
 
     let game_info = Arc::new(Mutex::new(GameInformation {
         messages: mock_msgs,
-        player : mock_player,
-        current_room : mock_room,
-        adjacent_rooms : mock_connections,
-        current_enemies : mock_enemies,
-        game : Game {
+        player: mock_player,
+        current_room: mock_room,
+        adjacent_rooms: mock_connections,
+        current_enemies: mock_enemies,
+        game: Game {
             stat_limit: 100,
             init_points: 100,
             description: String::from("Mock game description."),
-        }
+        },
     }));
 
     let mut user_interface = ui::TerminalInterface::new(game_info.clone()).unwrap();
